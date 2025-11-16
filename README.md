@@ -327,8 +327,8 @@ This project successfully demonstrates intelligent AI behavior in a Pacman envir
 1. Clone
 
 ```bash
-git clone https://github.com/yourusername/pacman-ai.git
-cd pacman-ai
+git clone https://github.com/swalihaattar/pacman-ai-engine.git
+cd pacman-ai-engine
 ```
 
 2. Install
