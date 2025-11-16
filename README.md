@@ -13,7 +13,7 @@ This project implements a fully functional Pacman game with an intelligent AI sy
 
 <p align="center">
   <!-- <img src="assets/demo_video_win_pacman.gif" width="500" /> -->
-  <img src="assets/demov-ideo.gif" width="500" />
+  <img src="assets/demo-video.gif" width="500" />
 </p>
 
 ---
