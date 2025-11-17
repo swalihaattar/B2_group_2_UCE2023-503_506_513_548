@@ -2,6 +2,7 @@ import os
 import random
 import math
 
+from .levels import LEVELS, LEVEL_ORDER, LEVEL_MAX_POINTS
 from .maze import Maze, PELLET, POWER, PACMAN, GHOST, WALL, DEFAULT_MAP
 from .entities import Pacman, Ghost
 from ai_modules.controller import HybridController
@@ -12,38 +13,53 @@ HIGHSCORE_FILE = "highscore.txt"
 
 
 # ----------------------------------------------------------
-# Persistent Highscore
+# Persistent Highscore (Level-wise) - MODULE LEVEL FUNCTIONS
 # ----------------------------------------------------------
-def load_highscore():
-    if not os.path.exists(HIGHSCORE_FILE):
+def load_highscore_for_level(level_name):
+    """Load highscore for a specific level"""
+    filename = f"highscore_{level_name}.txt"
+    if not os.path.exists(filename):
         return 0
     try:
-        with open(HIGHSCORE_FILE, "r") as f:
+        with open(filename, "r") as f:
             return int(f.read().strip())
     except:
         return 0
 
-def save_highscore(score):
+def save_highscore_for_level(level_name, score):
+    """Save highscore for a specific level"""
+    filename = f"highscore_{level_name}.txt"
     try:
-        with open(HIGHSCORE_FILE, "w") as f:
+        with open(filename, "w") as f:
             f.write(str(score))
     except:
         pass
 
 
-
 class GameEngine:
 
     # ----------------------------------------------------------
-    def __init__(self, map_lines=None):
-        # Persistent highscore
-        self.highscore = load_highscore()
-
+    def __init__(self, map_lines=None, level_name=None):
+        # Level management
+        self.current_level_index = 0
+        self.current_level_name = LEVEL_ORDER[0]  # Start with beginner
+        self.current_variation = 0
+        self.all_levels_complete = False
+        
+        # Persistent highscores (level-wise)
+        self.highscores = self.load_all_highscores()
+        
         # Load map
         if map_lines is None:
-            map_lines = DEFAULT_MAP
-
+            if level_name is None:
+                level_name = self.current_level_name
+            # Randomly select variation
+            variations = LEVELS[level_name]
+            self.current_variation = random.randint(0, len(variations) - 1)
+            map_lines = variations[self.current_variation]
+        
         self.original_map = [row[:] for row in map_lines]
+
         self.maze = Maze(map_lines)
 
         self.tile_size = TILE_SIZE
@@ -68,6 +84,72 @@ class GameEngine:
         self.step_time = 0
 
 
+    # ----------------------------------------------------------
+    # LEVEL MANAGEMENT METHODS (INSIDE CLASS)
+    # ----------------------------------------------------------
+    def load_all_highscores(self):
+        """Load highscores for all levels"""
+        return {
+            level: load_highscore_for_level(level) 
+            for level in LEVEL_ORDER
+        }
+
+    def get_current_highscore(self):
+        """Get highscore for current level"""
+        return self.highscores.get(self.current_level_name, 0)
+
+    def save_current_highscore(self):
+        """Save highscore for current level if beaten"""
+        current_score = self.pacman.score
+        current_high = self.get_current_highscore()
+        
+        if current_score > current_high:
+            self.highscores[self.current_level_name] = current_score
+            save_highscore_for_level(self.current_level_name, current_score)
+
+    def load_next_level(self):
+        """Load the next level in progression"""
+        self.current_level_index += 1
+        
+        if self.current_level_index >= len(LEVEL_ORDER):
+            # Game completed!
+            self.all_levels_complete = True
+            return False
+        
+        self.current_level_name = LEVEL_ORDER[self.current_level_index]
+        variations = LEVELS[self.current_level_name]
+        self.current_variation = random.randint(0, len(variations) - 1)
+        map_lines = variations[self.current_variation]
+        
+        # Reset game with new map
+        self.original_map = [row[:] for row in map_lines]
+        self.maze = Maze(map_lines)  # ADDED: Create new maze first
+        
+        # ADDED: Update dimensions
+        self.width_px = self.maze.width * TILE_SIZE
+        self.height_px = self.maze.height * TILE_SIZE
+        
+        self.reset()
+        return True
+
+    def reset_to_level(self, level_index=None):
+        """Reset current level or specific level"""
+        if level_index is not None:
+            self.current_level_index = level_index
+            self.current_level_name = LEVEL_ORDER[level_index]
+        
+        variations = LEVELS[self.current_level_name]
+        self.current_variation = random.randint(0, len(variations) - 1)
+        map_lines = variations[self.current_variation]
+        self.original_map = [row[:] for row in map_lines]
+        
+        self.maze = Maze(map_lines)  # ADDED: Create new maze first
+        
+        # ADDED: Update dimensions
+        self.width_px = self.maze.width * TILE_SIZE
+        self.height_px = self.maze.height * TILE_SIZE
+        
+        self.reset()
 
     # ----------------------------------------------------------
     def _load_from_map(self):
@@ -114,6 +196,10 @@ class GameEngine:
     def reset(self):
         self.maze = Maze(self.original_map)
 
+        # ADDED: Update dimensions based on new maze
+        self.width_px = self.maze.width * TILE_SIZE
+        self.height_px = self.maze.height * TILE_SIZE
+
         self.pellets = set()
         self.power_pellets = set()
         self.ghosts = []
@@ -125,6 +211,14 @@ class GameEngine:
         self.game_over = False
         self.win = False
         self.step_time = 0
+        
+        # Reset speeds to default
+        if self.pacman:
+            self.pacman.move_delay = self.pacman.normal_move_delay
+        
+        for g in self.ghosts:
+            g.move_delay = g.normal_move_delay
+            g.state = "normal"
 
 
 
@@ -138,6 +232,11 @@ class GameEngine:
         elif key == pygame.K_RIGHT: self.pacman.set_intent(1,0)
         elif key == pygame.K_a: self.pacman.toggle_autopilot()
         elif key == pygame.K_SPACE: self.reset()
+        elif key == pygame.K_RETURN or key == pygame.K_KP_ENTER:
+            if self.game_over and self.win:
+                if not self.load_next_level():
+                    # All levels complete - restart from beginning
+                    self.reset_to_level(0)
 
 
 
@@ -155,11 +254,7 @@ class GameEngine:
             self.win = True
             self.running = False
             self.game_over = True
-
-            if self.pacman.score > self.highscore:
-                self.highscore = self.pacman.score
-                save_highscore(self.highscore)
-
+            self.save_current_highscore()
             return
 
 
@@ -226,6 +321,7 @@ class GameEngine:
             for g in self.ghosts:
                 g.state = "vulnerable"
                 g.vulnerable_timer = 5
+                g.move_delay = g.vulnerable_move_delay  # SLOW DOWN GHOST
 
 
 
@@ -241,8 +337,9 @@ class GameEngine:
                 g.vulnerable_timer -= dt
                 if g.vulnerable_timer <= 0:
                     g.state = "normal"
+                    g.move_delay = g.normal_move_delay  # RESET SPEED
 
-                if all(gg.state == "normal" for gg in self.ghosts):
+            if all(gg.state == "normal" for gg in self.ghosts):
                     self.pacman.move_delay = self.pacman.normal_move_delay
 
             if g.time_since_move < g.move_delay:
@@ -286,22 +383,19 @@ class GameEngine:
             g.set_tile(1, 1)
             g.set_pixel_pos(*self.maze.tile_center(1, 1, self.tile_size))
             g.state = "normal"
+            g.move_delay = g.normal_move_delay  # RESET SPEED when eaten
             g.vulnerable_timer = 0
+            
+            if all(gg.state == "normal" for gg in self.ghosts):
+                self.pacman.move_delay = self.pacman.normal_move_delay
             return
-
         # --------------------
         # PACMAN DIES
         # --------------------
         self.running = False
         self.game_over = True
         self.win = False
-
-        # Save new highscore
-        if self.pacman.score > self.highscore:
-            self.highscore = self.pacman.score
-            save_highscore(self.highscore)
-
-
+        self.save_current_highscore()
 
     # ----------------------------------------------------------
     def get_state_snapshot(self):
