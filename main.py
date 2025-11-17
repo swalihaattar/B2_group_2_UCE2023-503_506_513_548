@@ -15,10 +15,10 @@ WINDOW_TITLE = "Pac-Man Hybrid (Environment + UI) - Prototype"
 def main():
     pygame.init()
     clock = pygame.time.Clock()
-
     engine = GameEngine()
     renderer = Renderer(engine)
-
+    
+    # Initial screen creation
     screen = pygame.display.set_mode((renderer.width, renderer.height))
     pygame.display.set_caption(WINDOW_TITLE)
 
@@ -52,12 +52,33 @@ def main():
                         waiting = False
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_SPACE:
-                            engine.reset()
+                            engine.reset_to_level()  # Restart current level
+                            
+                            # ADDED: Resize window after reset
+                            renderer = Renderer(engine)
+                            screen = pygame.display.set_mode((renderer.width, renderer.height))
+                            
                             waiting = False
+                        elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                            if engine.win:
+                                if not engine.load_next_level():
+                                    # All levels complete
+                                    engine.reset_to_level(0)
+                                
+                                # ADDED: Resize window for next level
+                                renderer = Renderer(engine)
+                                screen = pygame.display.set_mode((renderer.width, renderer.height))
+                                
+                                waiting = False
                         elif event.key == pygame.K_ESCAPE:
                             running = False
                             waiting = False
+                
+                # Keep rendering during wait
+                renderer.render(screen)
+                pygame.display.flip()
 
+    pygame.quit()
 
 if __name__ == "__main__":
     main()
