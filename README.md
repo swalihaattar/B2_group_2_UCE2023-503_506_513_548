@@ -1,19 +1,16 @@
-# AI-Pacman Engine
+# **AI-Powered Pac-Man Game with Intelligent Pathfinding**
 
-## Project Title & Objective
+## **Overview**
 
-**Title:** AI-Powered Pacman Game with Intelligent Pathfinding and Decision-Making
-
-**Objective:**
-This project implements a fully functional Pacman game with an intelligent AI system that autonomously navigates the maze, avoids threats, and optimizes pellet collection. The primary goal is to demonstrate the application of artificial intelligence techniques including rule-based systems, feature extraction, and pathfinding algorithms (BFS) in a classic game environment. The project emphasizes clean architecture, modularity, and extensibility for future AI enhancements.
+**Title:** AI-Powered Pac-Man Game with Intelligent Pathfinding and Decision-Making
+**Objective:** A fully functional Pac-Man game featuring an autonomous AI system capable of navigating mazes, avoiding threats, and optimizing pellet collection using rule-based logic, feature extraction, and BFS pathfinding.
 
 ---
 
 ## Demo
 
 <p align="center">
-  <!-- <img src="assets/demo_video_win_pacman.gif" width="500" /> -->
-  <img src="assets/demo-video.gif" width="500" />
+  <img src="assets/Pacman-Demo-Video-2.gif" width="500" />
 </p>
 
 ---
@@ -111,207 +108,72 @@ Features = {
 
 ---
 
-### BFS Pathfinding Algorithm
+## **Key Features**
 
-- Multi-source BFS
-- Returns optimal distance grid
-- Handles pellets + vulnerable ghosts
-- O(V + E) complexity
-- Ideal for unweighted grid mazes
+### **Game Features**
 
----
+- Three difficulty levels with randomized maze variations
+- Persistent high-score system
+- Power pellets enabling temporary ghost vulnerability and Pac-Man speed boost
+- Collision handling including swap-collisions
+- Entirely AI-controlled gameplay (no manual mode)
 
-### Ghost AI System
+### **AI Features**
 
-#### Movement Algorithm
+- Priority-based decision system
+- Threat detection and escape logic
+- Vulnerable-ghost pursuit
+- Pellet targeting with safety filtering
+- BFS-based optimal navigation
 
-- Random valid direction
-- No backtracking (no 180° flip)
-- No pathfinding (keeps unpredictability)
+### **Visual Features**
 
-#### Collision Detection
-
-- Tile collision check
-- Swap-collision handling
-- Tracks previous tile positions
-
----
-
-## Results
-
-### Performance Metrics
-
-#### AI Effectiveness
-
-- Avoids ghosts reliably
-- Good pellet collection efficiency
-- Actively hunts vulnerable ghosts
-- Dynamically adapts to changing environment
-
-#### Technical Performance
-
-- 30 FPS steady
-- <16ms per frame updates (delta-time)
-- BFS <5ms in typical mazes
-- Low memory usage
-
-#### Gameplay Observations
-
-- Intelligent risk assessment
-- Balanced offense + defense
-- High score optimization
-- Smooth animation
+- Direction-based Pac-Man animation
+- 3D wall shading
+- Pulsing power-pellet animation
+- Dynamic HUD for score and level
 
 ---
 
-### Visual Demonstrations
+## **AI Decision Priorities**
 
-The game features:
+### **Threat Avoidance**
 
-- Direction-aware Pacman with mouth animation
-- 3D-effect walls
-- Pulsing power pellets
-- Wavy ghost sprites with expressive eyes
-- Vulnerable ghost flashing effect
-- HUD with score + high score
+Avoids normal ghosts within a small radius by selecting the safest direction.
 
----
+### **Opportunity Pursuit**
 
-### Architecture Quality
+Pursues vulnerable ghosts with increased movement speed.
 
-- **Modularity:** AI, engine, renderer separated
-- **Extensibility:** Easy to add new AI logic
-- **Maintainability:** Clear documentation + structured modules
+### **Resource Collection**
+
+Navigates safely toward pellets while avoiding ghost zones.
 
 ---
 
-## Conclusion
+## **Game Mechanics**
 
-This project successfully demonstrates intelligent AI behavior in a Pacman environment using:
+### **Pac-Man**
 
-1. Rule-based hierarchical decision-making
-2. BFS pathfinding
-3. Feature engineering
-4. Clean state management
+- Speed adjusts during power-up
+- Scores based on pellet type and ghost captures
 
-### Key Achievements
+### **Ghosts**
 
-- Fully autonomous gameplay
-- Robust AI that handles edge cases
-- Modular and extendable architecture
-- Strong software engineering principles
+- Randomized movement with no immediate backtracking
+- Reduced speed when vulnerable
 
-### Technical Insights
+### **Levels**
 
-- BFS ideal for grid games
-- Priority-based decision architecture is effective
-- Feature extraction simplifies game-state complexity
-- Time-based animation ensures hardware consistency
+Beginner, Intermediate, and Pro layouts with increasing complexity
 
 ---
 
-## Future Scope
+## **Performance**
 
-### AI Enhancements
-
-- Q-learning for adaptive behavior
-- Neural networks using current features
-- DQN (end-to-end learning)
-- A\* pathfinding
-- Minimax + MCTS
-- Predictive ghost modeling
-- Dynamic danger radius
-- Multi-step planning
-
----
-
-### Game Features
-
-- Difficulty levels
-- Ghost personalities
-- Bonus fruits
-- Lives system
-- Complex levels
-- Timed challenges
-
----
-
-### Technical Enhancements
-
-- Level editor
-- Config files
-- Replay system
-- Profiling tools
-- Save/load system
-
----
-
-### Visual & Audio
-
-- Sprite sheets
-- Particle effects
-- Transitions
-- Theming
-- Sound effects + music
-
----
-
-### Multiplayer & Social
-
-- 2-player mode
-- Co-op mode
-- Ghost vs Pacman mode
-- Online leaderboard
-
----
-
-### Research & Analysis
-
-- Decision visualizers
-- Heatmaps
-- Metrics dashboard
-- A/B testing
-- Training datasets
-- Notebook experiments
-
----
-
-### Code Quality
-
-- Unit + integration tests
-- CI pipeline
-- Benchmarks
-- Type hints
-- Logging system
-
----
-
-## References
-
-### Game Design
-
-- Pacman by Namco (1980)
-
-### AI & Algorithms
-
-- Russell & Norvig — _Artificial Intelligence: A Modern Approach_
-- UC Berkeley CS188 — Pacman Projects
-
-### Technical Docs
-
-- Pygame documentation
-- Python official docs
-
-### Pathfinding
-
-- BFS
-- Manhattan distance heuristic
-
-### Development Tools
-
-- Python 3.8+
-- Pygame 2.0+
-- NumPy
+- Stable 30 FPS
+- Low-latency BFS computations
+- Lightweight memory usage
 
 ---
 
@@ -327,31 +189,45 @@ This project successfully demonstrates intelligent AI behavior in a Pacman envir
 1. Clone
 
 ```bash
-git clone https://github.com/swalihaattar/pacman-ai-engine.git
-cd pacman-ai-engine
+git clone https://github.com/yourusername/pacman-ai.git
+cd pacman-ai
 ```
 
 2. Install
 
 ```bash
 pip install -r requirements.txt
-```
-
-3. Run
-
-```bash
 python main.py
 ```
 
 ---
 
-## Controls
+## **Controls**
 
-| Key        | Action           |
-| ---------- | ---------------- |
-| Arrow Keys | Manual movement  |
-| A          | Toggle autopilot |
-| SPACE      | Restart          |
-| ESC        | Quit             |
+_(All gameplay is controlled by the AI.)_
+
+| Key   | Action        |
+| ----- | ------------- |
+| Space | Restart level |
+| Enter | Next level    |
+| Esc   | Quit          |
+
+---
+
+## **Limitations**
+
+- Greedy decision-making with no long-term planning
+- Possible trapping in dead ends when ghosts block exits
+- No prediction of ghost movement
+
+---
+
+## **Future Work**
+
+- Q-Learning and adaptive reinforcement learning
+- A\* pathfinding
+- Ghost movement prediction
+- Level editor and replay system
+- Multiplayer and online leaderboards
 
 ---
