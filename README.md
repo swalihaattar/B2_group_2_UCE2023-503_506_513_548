@@ -19,7 +19,6 @@ A fully functional Pac-Man game featuring an autonomous AI system capable of nav
 ### Game Environment
 
 - Grid-based maze structure (tile-based system)
-- Default map size: 15x7 tiles (28 pixels per tile)
 - Configurable maze layouts using ASCII representation
 
 ### Game State Features
@@ -35,8 +34,8 @@ A fully functional Pac-Man game featuring an autonomous AI system capable of nav
 ```
 Legend:
 - '%' = Wall
-- '.' = Normal pellet (+10 points)
-- 'o' = Power pellet (+25 points)
+- '.' = Normal pellet 
+- 'o' = Power pellet 
 - 'P' = Pacman spawn point
 - 'G' = Ghost spawn point
 - ' ' = Empty space
